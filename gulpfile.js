@@ -9,11 +9,11 @@ const gulp = require("gulp"),
 	concat = require('gulp-concat');
 
 gulp.task("html", function () {
-	return gulp.src("./src/index.html").pipe(gulp.dest("./dist"))
+	return gulp.src("./app/index.html").pipe(gulp.dest("./dist"))
 });
 	
 gulp.task("less", function () {
-	return src("./src/assets/styles/main.less")
+	return src("./app/assets/styles/main.less")
 		.pipe(less())
 		.pipe(
 			autoprefixer({
@@ -25,11 +25,14 @@ gulp.task("less", function () {
 
 gulp.task("scripts", function() {
 	return src([
-		'./src/assets/scripts/store/store.js',
-		'./src/assets/scripts/components/node.js',
-		'./src/assets/scripts/components/form.js',
-		'./src/assets/scripts/components/table.js',
-		'./src/assets/scripts/main.js'
+		'./app/src/store/store.js',
+		'./app/src/components/node.js',
+		'./app/src/components/button.js',
+		'./app/src/components/userform.js',
+		'./app/src/components/selectionform.js',
+		'./app/src/components/tablerow.js',
+		'./app/src/components/table.js',
+		'./app/src/main.js'
 	]) 
    		.pipe(concat('main.js')) 
    		.pipe(dest('./dist'));
@@ -42,9 +45,9 @@ gulp.task("serve", function () {
 		},
 	});
 
-	gulp.watch("./src/index.html").on("change", series("html"));
-	gulp.watch("./src/assets/styles/**/*.less").on("change", series("less"));
-	gulp.watch("./src/assets/scripts/**/*.js").on("change", series("scripts"));
+	gulp.watch("./app/index.html").on("change", series("html"));
+	gulp.watch("./app/assets/styles/**/*.less").on("change", series("less"));
+	gulp.watch("./app/src/**/*.js").on("change", series("scripts"));
 	
 	gulp.watch("./dist/index.html").on("change", browserSync.reload);
 	gulp.watch("./dist/style.css").on("change", browserSync.reload);

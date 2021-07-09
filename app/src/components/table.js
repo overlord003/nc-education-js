@@ -1,30 +1,16 @@
-class TableRow {
-    constructor(name='') {
-        this.row = createElementNode('div', 'table__row table-row');
-        this.row.innerHTML = `<div class="table-row__user-item user-item">${name}</div>`;
-    }
-
-    appendTo(parent) {
-        parent.appendChild(this.row);
-    }
-
-    generateClick() {
-        this.row.querySelector('.user-item').dispatchEvent(new Event('click', {bubbles: true}));
-    }
-}
-
-class Table {
+class Table extends Node {
     constructor() {
         if (typeof Table.instance === 'object') {
             return Table.instance;
         }
 
-        this._editingItem = null;
+        super('div', 'table');
 
-        this.table = createElementNode('div', 'table');
-        this.table.onclick = (event) => {
+        this._editingItem = null;
+        
+        this.element.onclick = (event) => {
             let target = event.target.closest('.user-item, .edit-ok, .edit-cancel');
-            if (!this.table.contains(target)) return;
+            if (!this.element.contains(target)) return;
         
             if (target.classList.contains('edit-ok')) {
                 this._finishUserItemEdit(true);
@@ -83,7 +69,7 @@ class Table {
         }
 
         let newRow = new TableRow();
-        newRow.appendTo(this.table);
+        newRow.appendTo(this.element);
         newRow.generateClick();
 
         store.dispatch({
@@ -95,15 +81,11 @@ class Table {
     // Чисто для генерации начальных строчек, чтобы было не так пусто...
     generateRow(name) {
         let newRow = new TableRow(name);
-        newRow.appendTo(this.table);
+        newRow.appendTo(this.element);
 
         store.dispatch({
             type: 'ADD',
             payload: name    
         });
-    }
-
-    appendTo(parent) {
-        parent.appendChild(this.table);
     }
 }

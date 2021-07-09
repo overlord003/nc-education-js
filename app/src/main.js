@@ -7,12 +7,10 @@ let app = document.getElementById('app');
 let table = new Table();
 table.appendTo(app);
 
-// Ha-ha-ha!
-let button = document.createElement('button');
-button.innerHTML = 'Добавить';
-app.append(button);
+let button = new Button({textContent: 'Добавить'});
+button.appendTo(app);
+button.addHandler('click', () => table.addNewRow());
 
-button.addEventListener('click', () => table.addNewRow());
 
 table.generateRow('Chirstina');
 table.generateRow('Nikita');

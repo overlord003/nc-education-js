@@ -155,4 +155,4 @@ button1.addHandler('click', () => window.router.go('/table'));
 button2.addHandler('click', () => window.router.go('/calendar'));
 
 
-window.router.go('/');
+// window.router.go('/');

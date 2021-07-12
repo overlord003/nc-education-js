@@ -1,13 +1,26 @@
 class Table extends Node {
-    constructor() {
+    constructor(names=[], columns=0) {
         if (typeof Table.instance === 'object') {
             return Table.instance;
         }
 
-        super('div', 'table');
+        // super('div', {classList: 'table-section__table table'});
+        super('div', {classList: ''});
 
-        this._editingItem = null;
-        
+
+        this.rows = [];
+        names.forEach(name => {
+            let row = new TableRow(name, columns);
+            row.appendTo(this.element);
+            this.rows.push(row);
+
+            store.dispatch({
+                type: 'ADD',
+                payload: name    
+             });
+        });
+
+        this._editingItem = null;     
         this.element.onclick = (event) => {
             let target = event.target.closest('.user-item, .edit-ok, .edit-cancel');
             if (!this.element.contains(target)) return;
@@ -36,12 +49,12 @@ class Table extends Node {
         };
     
         item.classList.add('edit-item');
-        this._editingItem.form.replaceIn(item, true);
+        this._editingItem.form.appendTo(item, true);
     }
     
     _finishUserItemEdit(isOk=false) {
         if (isOk) {
-            let newValue = this._editingItem.form.getValue();
+            let newValue = this._editingItem.form.name;
             if (newValue) {
                 this._editingItem.item.innerHTML = newValue;
 
@@ -62,30 +75,20 @@ class Table extends Node {
         this._editingItem = null;
     }
 
-    addNewRow() {
+    addNewRow(columns) {
         if (this._editingItem) {
             alert('Попытался сломать? Фиг тебе! Сначала закончи с предыдущим пользователем.');
             return;
         }
 
-        let newRow = new TableRow();
+        let newRow = new TableRow('', columns);
         newRow.appendTo(this.element);
         newRow.generateClick();
+        this.rows.push(newRow);
 
         store.dispatch({
            type: 'ADD',
            payload: ''    
-        });
-    }
-
-    // Чисто для генерации начальных строчек, чтобы было не так пусто...
-    generateRow(name) {
-        let newRow = new TableRow(name);
-        newRow.appendTo(this.element);
-
-        store.dispatch({
-            type: 'ADD',
-            payload: name    
         });
     }
 }

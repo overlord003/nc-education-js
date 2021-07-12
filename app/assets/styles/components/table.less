@@ -1,8 +1,145 @@
-.test-class {
-    width: 200px;
-    height: 100px;
+/* Нормальные стили */
 
-    border: 1px solid @red;
+.app {
+    background-color: @secondary-color;
+
+    font-size: 17px;
+    line-height: 25px;
+}
+
+.header {
+    width: 100%;
+    padding: 47px 0;
+
+    display: flex;
+    justify-content: flex-end;
+
+    &__button {
+        margin-right: 16px;
+        padding: 15px 24px;
+
+        border: 1px solid @button-color;
+        border-radius: 100px;
+
+        background-color: transparent;
+
+        &:hover {
+            background-color: @button-color;
+        }
+    }
+}
+
+.content {
+    min-width: 1100px;
+    max-width: 1400px;
+
+    margin: 0 auto;
+}
+
+.table-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__description {
+        width: 100%;
+        height: 500px;
+
+        background-color: @primary-color;
+    }
+
+    &__table {
+        margin-top: -80px;
+
+        background-color: @light-gray;
+
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0,0,0,.05), 
+                    0 1px 5px rgba(0,0,0,.07),
+                    0 10px 20px rgba(0,0,0,.07);
+
+        z-index: 1;
+    }
+}
+
+.description {
+    padding-left: 64px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    position: relative;
+
+    &__title {
+        max-width: 900px;
+
+        font-size: 64px;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    &__img {
+        width: 300px;
+        height: 300px;
+
+        position: absolute;
+        top: 100px;
+        right: 90px;
+    }
+}
+
+.table {
+    width: 90%;
+    min-height: 400px;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: @light-gray;
+
+    z-index: 1;
+}
+
+.table-row {
+    margin: 10px;
+    padding: 5px;
+
+    display: flex;
+    flex-flow: row wrap;
+
+    // border-top: 1px solid @gray;
+    // border-bottom: 1px solid @gray
+}
+
+.item {
+    width: 100px;
+    height: 40px;
+    margin: 2px;;
+
+    flex-grow: 1;
+}
+
+.user-item {
+    width: 150px;
+
+    background-color: #C8E4FF;
+}
+
+.button {
+    cursor: pointer;
+
+    margin-right: 16px;
+    padding: 15px 24px;
+
+    border: 1px solid @button-color;
+    border-radius: 100px;
+
+    background-color: transparent;
+
+    &:hover {
+        background-color: @button-color;
+    }
 }
 
 .user-wrapper {
@@ -12,27 +149,63 @@
     border: 1px solid @blue;
 }
 
-.table {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid @red;
-}
-
-.table-row {
-    margin: 5px;
-    display: flex;
-    border: 1px solid @red;
-}
-
-.user-item {
-    width: 100px;
-    height: 20px;
-
-    padding: 10px;
-    border: 1px solid @blue;
-
-}
-
 .edit-item {
     background-color: @gray;
+}
+
+// Чекбоксонёчек нелюбимый (любимый)
+ 
+.checkbox-item {
+    display: block;
+    position: relative;
+}
+
+.checkbox__input {
+    &._hidden {
+        width: 1px;
+        height: 1px;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+ 
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+}
+
+.checkbox__content {
+    &:before {
+        width: 100%;
+        height: 100%;
+        margin-right: 4px;
+    
+        display: inline-block;
+    
+        cursor: pointer;
+    
+        content: "";
+     
+        background-color: #f2b7d3;
+        background-image: url("data:image/svg+xml,%3Csvg height='512pt' viewBox='0 0 512 512' width='512pt' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m512 256c0 141.386719-114.613281 256-256 256s-256-114.613281-256-256 114.613281-256 256-256 256 114.613281 256 256zm0 0' fill='%23ff929f'/%3E%3Cpath d='m229.195312 141.976562c52.667969-40.644531 79.070313-98.472656 91.082032-133.839843-20.539063-5.3125-42.078125-8.136719-64.277344-8.136719-141.386719 0-256 114.613281-256 256s114.613281 256 256 256c10.59375 0 21.046875-.644531 31.304688-1.894531-111.265626-93.394531-127.914063-189.292969-120.632813-256.339844 4.800781-44.179687 27.34375-84.636719 62.523437-111.789063zm0 0' fill='%23ff737d'/%3E%3Cpath d='m333.972656 242.511719 59.339844-59.335938c17.730469-17.734375 17.730469-46.753906 0-64.484375-17.734375-17.734375-46.753906-17.734375-64.488281 0l-59.335938 59.335938c-7.449219 7.449218-19.527343 7.449218-26.976562 0l-59.335938-59.335938c-17.734375-17.734375-46.75-17.734375-64.484375 0-17.734375 17.730469-17.734375 46.75 0 64.484375l59.335938 59.335938c7.449218 7.449219 7.449218 19.527343 0 26.976562l-59.335938 59.335938c-17.734375 17.734375-17.734375 46.753906 0 64.484375 17.734375 17.734375 46.75 17.734375 64.484375 0l59.335938-59.335938c7.449219-7.449218 19.527343-7.449218 26.976562 0l59.335938 59.335938c17.734375 17.734375 46.753906 17.734375 64.488281 0 17.730469-17.730469 17.730469-46.75 0-64.484375l-59.339844-59.335938c-7.449218-7.449219-7.449218-19.527343 0-26.976562zm0 0' fill='%23fff'/%3E%3Cpath d='m216.9375 152.453125-33.761719-33.765625c-17.734375-17.730469-46.75-17.730469-64.484375 0-17.734375 17.734375-17.734375 46.753906 0 64.488281l51.257813 51.257813c7.257812-31.316406 23.585937-59.886719 46.988281-81.980469zm0 0' fill='%23bdfaff'/%3E%3Cpath d='m183.175781 393.308594 5.898438-5.898438c-17.511719-37.863281-23.691407-73.683594-23.871094-105.101562l-46.515625 46.515625c-17.730469 17.734375-17.730469 46.753906 0 64.484375 17.734375 17.734375 46.753906 17.734375 64.488281 0zm0 0' fill='%23ccf8ff'/%3E%3C/svg%3E");
+        background-size: 24px 24px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}
+
+.checkbox__input:checked + .checkbox__content:before {
+    background-color: #95efd6;
+    background-image: url("data:image/svg+xml,%3Csvg height='512pt' viewBox='0 0 512 512' width='512pt' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m429.0625 0h-346.125c-45.804688 0-82.9375 37.132812-82.9375 82.9375v346.125c0 45.804688 37.132812 82.9375 82.9375 82.9375h346.125c45.804688 0 82.9375-37.132812 82.9375-82.9375v-346.125c0-45.804688-37.132812-82.9375-82.9375-82.9375zm0 0' fill='%23b2e59c'/%3E%3Cpath d='m286.507812 0h-203.570312c-45.804688 0-82.9375 37.132812-82.9375 82.9375v346.125c0 45.804688 37.132812 82.9375 82.9375 82.9375h106.796875c-84.058594-100.804688-52.410156-287.089844 11.078125-359.761719 61.308594-70.171875 80.023438-126.339843 85.695312-152.238281zm0 0' fill='%239ad880'/%3E%3Cpath d='m233.472656 382.277344c-10.515625 0-20.660156-4.023438-28.328125-11.285156l-107.894531-102.136719c-16.527344-15.644531-17.242188-41.726563-1.597656-58.253907 15.644531-16.527343 41.722656-17.246093 58.253906-1.597656l77.191406 73.070313 124.679688-138.691407c15.214844-16.925781 41.269531-18.308593 58.195312-3.097656 16.921875 15.214844 18.308594 41.269532 3.09375 58.195313l-152.949218 170.136719c-7.429688 8.261718-17.878907 13.175781-28.984376 13.625-.554687.023437-1.109374.035156-1.660156.035156zm0 0' fill='%23fff'/%3E%3Cpath d='m153.90625 209.003906c-16.53125-15.648437-42.609375-14.929687-58.253906 1.597656-15.644532 16.527344-14.929688 42.609376 1.597656 58.253907l43.746094 41.414062c3.574218-32.945312 11.363281-64.722656 22.167968-92.5zm0 0' fill='%23ccf8ff'/%3E%3C/svg%3E");
+    background-size: 24px 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.checkbox__input:disabled + .checkbox__content:before {
+    border: 1px solid gray;
+}
+
+.checkbox__input:focus + .checkbox__content:before {
+    outline: 2px solid black;
 }

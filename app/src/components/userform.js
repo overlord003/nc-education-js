@@ -1,39 +1,45 @@
+class Input extends Node {
+    constructor(type) {
+        super('input', {
+            attributes: {
+                type: type,
+            }
+        });
+    }
+
+    get value() {
+        return this.element.value;
+    }
+
+    set value(text) {
+        this.element.value = text;
+    }
+}
+
 class UserForm extends Node {
     constructor(props={}) {
         super('form', props);
-        this.element.onsubmit = () => {return false;};
 
-        this._inputText = new Node('input', {attributes: {type: 'text', name: 'inputText'}});
+        this._inputText = new Input('text');
         this._inputText.appendTo(this.element);
         
-        this._btnOk = new Button({classList: 'edit-ok', textContent: 'OK'});
+        this._btnOk = new Button('edit-ok', 'OK');
         this._btnOk.appendTo(this.element);
 
-        this._btnCancel = new Button({classList: 'edit-cancel', textContent: 'CANCEL'});
+        this._btnCancel = new Button('edit-cancel', 'CANCEL');
         this._btnCancel.appendTo(this.element);
     }
 
-    appendTo(parent, focused=false) {
-        super.appendTo(parent);
-
-        if (focused) {
-            this._setFocus();
-        }
+    appendTo(parent, replacement=false, focused=false) {
+        super.appendTo(parent, replacement);
+        this._inputText.setFocus(focused);
     }
 
-    replaceIn(parent, focused=false) {
-        super.replaceIn(parent);
-
-        if (focused) {
-            this._setFocus();
-        }
+    get name() {
+        return this._inputText.value;
     }
 
-    _setFocus() {
-        this._inputText.element.focus();
-    }
-
-    getValue() {
-        return this._inputText.element.value;
+    set name(name) {
+        this._inputText.value = name;
     }
 }

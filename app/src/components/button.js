@@ -1,5 +1,8 @@
 class Button extends Node {
-    constructor(props={}) {
-        super('button', props);
+    constructor(classList, textContent) {
+        super('button', {
+            classList: classList,
+            textContent: textContent
+        });
     }
 }

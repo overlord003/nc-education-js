@@ -1,0 +1,63 @@
+td, th {
+    padding: 3px;
+    text-align: center;
+}
+
+.calendar {
+  max-height: 400px;
+  min-width: 176px;
+
+  background-color: @light-gray;
+
+  font-size: 16px;
+  line-height: 1.2;
+
+  z-index: 1;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+
+  &__button {
+
+  }
+}
+
+.calendar-table {
+  margin-top: 20px;
+  
+
+  &__th {
+    font-size: .75em;
+    padding-bottom: .25em;
+    color: #999999;
+    font-weight: 500;
+  }
+}
+
+.calendar-table-tr {
+
+  cursor: pointer;
+
+  &__td {
+    width: 70px;
+
+
+    &:hover:not(._disabled) {
+      background-color: #b1dcfb;
+    }
+
+    &._disabled {
+      background-color: #cecece;
+    }
+    
+    &._booked {
+      background-color: #b1dcfb;
+      
+      &:hover {
+        background-color: #2780E3;
+      }
+    }
+  }
+}

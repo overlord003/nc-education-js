@@ -1,10 +1,30 @@
 const initialState = {
-	items: []
+	items: [],
+	dates: []
 }
 
 const reducer = (state = initialState, action) => {
 	const {type, payload} = action;
 	switch (type) {
+		case 'ADD_DATE': {
+			return {
+				...state,
+				items: state.items,
+				dates: [
+					...state.dates,
+					payload
+				]
+			}
+		}
+		case 'REMOVE_DATE': {
+			return {
+				...state,
+				items: state.items,
+				dates: state
+					.dates
+					.filter(date => date !== payload)
+			}
+		}
 		case 'ADD': {
 			return {
 				...state,
@@ -46,6 +66,9 @@ const createStore = (reducer) => {
 		dispatch(action) {
 			this.state = this.reducer(this.state, action)
 			this.subscriptions.forEach((subscription) => subscription(this.state))
+		},
+		checkStore(checkedDate) {
+			return (this.state) ? this.state.dates.includes(checkedDate) : false;
 		}
 	}
 }

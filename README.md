@@ -1,3 +1,3 @@
 # nc-education-js
 
-Посмотреть на текущую стадию проекта -> https://calm-reaches-37345.herokuapp.com/
+Посмотреть на текущую стадию проекта -> https://shrouded-shore-20721.herokuapp.com

@@ -1,8 +1,6 @@
 const {series, parallel, src, dest} = require("gulp");
 
 const gulp = require("gulp"),
-	rename = require("gulp-rename"),
-    inject = require("gulp-inject"),
 	less = require("gulp-less"),
 	autoprefixer = require("gulp-autoprefixer"),
 	browserSync = require("browser-sync").create(),
@@ -28,15 +26,16 @@ gulp.task("scripts", function() {
 		'./app/src/store/store.js',
 		'./app/src/components/node.js',
 		'./app/src/components/button.js',
+		'./app/src/components/calendar.js',
 		'./app/src/components/userform.js',
 		'./app/src/components/selectionform.js',
 		'./app/src/components/tablerow.js',
 		'./app/src/components/table.js',
-		'./app/src/components/calendar.js',
+		'./app/src/components/page.js',
 		'./app/src/main.js'
 	]) 
-   		.pipe(concat('main.js')) 
-   		.pipe(dest('./dist'));
+   	.pipe(concat('main.js')) 
+   	.pipe(dest('./dist'));
 });
 
 gulp.task("serve", function () {

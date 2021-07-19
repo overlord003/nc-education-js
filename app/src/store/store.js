@@ -25,7 +25,7 @@ const reducer = (state = initialState, action) => {
 					.filter(date => date !== payload)
 			}
 		}
-		case 'ADD': {
+		case 'ADD_NAME': {
 			return {
 				...state,
 				items: [
@@ -34,7 +34,7 @@ const reducer = (state = initialState, action) => {
 				]
 			}
 		}
-		case 'RENAME': {
+		case 'RENAME_NAME': {
 			return {
 				...state,
 				items: state
@@ -44,7 +44,7 @@ const reducer = (state = initialState, action) => {
 					)
 			}
 		}
-		case 'REMOVE': {
+		case 'REMOVE_NAME': {
 			return {
 				...state,
 				items: state.items.filter((item) => item !== payload)

@@ -5,11 +5,12 @@ class SimpleTable extends Node {
         this._classList = classList;
 
         // Создаем заголовки таблицы
-        this._header = new Node('tr', {classList: `${classList}__th`});
-        this._header.appendTo(this.element);
+        this._header = new Node('tr', {classList: `${classList}__th ${classList}-th`});
+        this._header.appendIn(this);
         headers.forEach(header =>
             new Node('th', {
-                textContent: header
+                textContent: header,
+                classList: `${classList}-th__td`
             })
             .appendTo(this._header.element)
         );
@@ -20,7 +21,7 @@ class SimpleTable extends Node {
     // Создаем новую строчку таблицы
     createRow(values=[], columns=1) {
         let row = new Node('tr', {classList: `${this._classList}__tr ${this._classList}-tr`});
-        row.appendTo(this.element);
+        row.appendIn(this);
         
         if (values.length < columns) {
             values = [
@@ -57,6 +58,8 @@ class Calendar extends SimpleTable {
         this.currentYear = 2021;
         this.currentMonth = 7;
 
+        this.count = 0;
+
         this.element.onclick = (event) => {
             let td = event.target.closest('td'); 
 
@@ -66,6 +69,8 @@ class Calendar extends SimpleTable {
             if (td.classList.contains('_disabled')) {
                 return;
             } else if (td.classList.contains('_booked')) {
+                this.count -= 1;
+
                 td.classList.remove('_booked');
 
                 store.dispatch({
@@ -73,12 +78,18 @@ class Calendar extends SimpleTable {
                     payload: this.formatDate(new Date(this.currentYear, this.currentMonth, +td.textContent))
                 });
             } else {
-                td.classList.add('_booked');
+                if (this.count > 5) {
+                    alert('Превышено допустимое количество забронированных дат!');
+                } else {
+                    this.count += 1;
+                    
+                    td.classList.add('_booked');
 
-                store.dispatch({
-                    type: 'ADD_DATE',
-                    payload: this.formatDate(new Date(this.currentYear, this.currentMonth, +td.textContent))
-                });
+                    store.dispatch({
+                        type: 'ADD_DATE',
+                        payload: this.formatDate(new Date(this.currentYear, this.currentMonth, +td.textContent))
+                    });
+                }
             }
         };
     }
@@ -131,7 +142,7 @@ class Calendar extends SimpleTable {
     prev() {
         this.currentMonth -= 1;
         if (this.currentMonth === 0) {
-            this.currentMonth = 11;
+            this.currentMonth = 12;
             this.currentYear -= 1;
         }
         this.createCalendar(this.currentYear, this.currentMonth);
@@ -157,38 +168,16 @@ class Calendar extends SimpleTable {
 }
 
 
-class Booking extends Node {
-    constructor() {
-        super('div', {classList: 'table-section__table calendar'});
+class CalendarBlock extends Node {
+    constructor(parentClass) {
+        super('div', {classList: `${parentClass}__calendar calendar`});
       
         // Навигационный блок с кнопками переключателями и заголовком текущего месяца
         this._header = new Node('header', {classList: 'calendar__header calendar-header'});
-        this._header.appendTo(this.element);
+        this._header.appendIn(this);
 
         this._prevButton = new Button('calendar-header__button', 'Пред.');
         this._nextButton = new Button('calendar-header__button', 'След.');
-
-        this._title = new Node('h2', {classList: 'calendar-header__title'});
-        
-        this._prevButton.appendTo(this._header.element);
-        this._title.appendTo(this._header.element);
-        this._nextButton.appendTo(this._header.element);
-
-        // Календарный блок
-        this._calendar = new Calendar('calendar-table');
-        this._calendar.addClass('calendar__calendar-table');
-        this._calendar.appendTo(this.element);
-
-        this.start();
-    }
-
-    // Активируем календарь - вешаем обработчики, наполняем его смыслом...
-    start() {
-        let currentDate = new Date();
-        this._calendar.createCalendar(currentDate.getFullYear(), currentDate.getMonth());
-
-        this._updateTitle();
-
         this._prevButton.addHandler('click', () => {
             this._calendar.prev();
             this._updateTitle();
@@ -197,9 +186,56 @@ class Booking extends Node {
             this._calendar.next();
             this._updateTitle();
         });
+
+        this._title = new Node('h2', {classList: 'calendar-header__title'});
+        
+        this._prevButton.appendIn(this._header);
+        this._title.appendIn(this._header);
+        this._nextButton.appendIn(this._header);
+
+        // Календарный блок
+        this._calendar = new Calendar('calendar-table');
+        this._calendar.addClass('calendar__calendar-table');
+        this._calendar.appendIn(this);
+    }
+
+    // Активируем календарь...
+    start() {
+        let currentDate = new Date();
+        this._calendar.createCalendar(currentDate.getFullYear(), currentDate.getMonth() + 1);
+
+        this._updateTitle();
     }
 
     _updateTitle() {
         this._title.insertText(`${this._calendar.currentMonth} ${this._calendar.currentYear}`, true);
+    }
+}
+
+class DatesBlock extends Node{
+    constructor(parentClass) {
+        super('div', {classList: `${parentClass}__dates dates`});
+
+        this.title = new Node('h2', {
+            classList: 'dates__title dates-title',
+            textContent: 'Ваши бронирования'
+        });
+        this.title.appendIn(this);
+
+        this.datesList = new Node('ul', {classList: 'dates__list dates-list'});
+        this.datesList.appendIn(this);
+    }
+
+    update(dates) {
+        this.datesList.removeChildren();
+
+        dates
+            .forEach(date => {
+                const item = new Node('li', {
+                    classList: ' dates-list__item',
+                    textContent: date
+                });
+                item.appendIn(this.datesList);
+            });
     }
 }

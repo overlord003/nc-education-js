@@ -1,37 +1,6 @@
-const store = createStore(reducer);
-store.subscribe((state) => console.log(state));
+import Route from './route';
 
-class Route {
-    constructor(pathname, view, props) {
-        this._pathname = pathname;
-        this._blockClass = view;
-        this._block = null;
-        this._props = props;
-    }
-
-    leave() {
-        if (this._block) {
-            this._block.hide();
-        }
-    }
-
-    match(pathname) {
-        return pathname === this._pathname;
-    }
-
-    render() {
-        if (!this._block) {
-            this._block = new this._blockClass();
-            this._block.appendTo(document.querySelector(this._props.rootQuery));
-            return;
-        }
-
-        this._block.show();
-    }
-}
-
-
-class Router {
+export default class Router {
     constructor(rootQuery) {
         // singleton
         if (Router.__instance) {
@@ -112,15 +81,3 @@ class Router {
         return this.routes.find(route => route.match(pathname));
     }
 }
-
-const router = new Router('.app');
-
-router
-    .use('/', StartPage)
-    .use('/calendar', CalendarPage)
-    .use('/users', UsersPage)
-    .start();
-
-window.router = router;
-
-window.router.go('/');

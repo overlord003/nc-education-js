@@ -1,21 +1,40 @@
 class Table extends Node {
-    constructor(names=[], columns=0) {
+    constructor(parentClass, names=[], dates) {
         if (typeof Table.instance === 'object') {
             return Table.instance;
         }
 
-        // super('div', {classList: 'table-section__table table'});
-        super('div', {classList: ''});
+        super('div', {classList: `${parentClass}__table table`});
 
+        this.dates = dates;
 
+        // Создаем заголовок
+        this.header = new Node('div', {
+            classList: 'table__header table-header'
+        });
+        let item = new Node('div', {
+            classList:  'table-header__item',
+        });
+        item.appendIn(this.header);
+        dates.forEach(date => {
+            let item = new Node('div', {
+                classList:  'table-header__item',
+                textContent: date 
+            });
+            item.appendIn(this.header);
+        });
+        this.header.appendIn(this);
+        /* Созданиие заголовка закончено */
+
+        // Создаем строчки
         this.rows = [];
         names.forEach(name => {
-            let row = new TableRow(name, columns);
+            let row = new TableRow(name, dates.length);
             row.appendTo(this.element);
             this.rows.push(row);
 
             store.dispatch({
-                type: 'ADD',
+                type: 'ADD_NAME',
                 payload: name    
              });
         });
@@ -37,6 +56,40 @@ class Table extends Node {
             }
         };
 
+        // Drag n drop start
+        const getNextElement = (cursorPosition, currentElement) => {
+            const currentElementCoord = currentElement.getBoundingClientRect();
+            const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2;
+          
+            const nextElement = (cursorPosition < currentElementCenter) ?
+                currentElement :
+                currentElement.nextElementSibling;
+          
+            return nextElement;
+        };
+
+        this.addHandler('dragstart', (event) => 
+            event.target.classList.add('selected')
+        );
+
+        this.addHandler('dragend', (event) =>
+            event.target.classList.remove('selected')
+        );
+
+        this.addHandler('dragover', (event) => {
+            event.preventDefault();
+
+            let activeElement = this.element.querySelector('.selected');
+            let currentElement = event.target.closest('.table-row');
+            
+            if (!currentElement) return;
+            if (activeElement === currentElement) return;
+
+            const nextElement = getNextElement(event.clientY, currentElement);
+            this.element.insertBefore(activeElement, nextElement);
+        });
+        // Drag n drop end
+
         Table.instance = this;
         return this;
     }
@@ -45,7 +98,9 @@ class Table extends Node {
         this._editingItem = {
             item: item,
             data: item.innerHTML,
-            form: new UserForm()
+            form: new UserForm({
+                classList: 'form'
+            })
         };
     
         item.classList.add('edit-item');
@@ -60,7 +115,7 @@ class Table extends Node {
 
                 let lastValue = this._editingItem.data;
                 store.dispatch({
-                    type: 'RENAME',
+                    type: 'RENAME_NAME',
                     payload: {lastValue, newValue}  
                 });
             } else {
@@ -75,20 +130,52 @@ class Table extends Node {
         this._editingItem = null;
     }
 
-    addNewRow(columns) {
+    addNewRow() {
         if (this._editingItem) {
             alert('Попытался сломать? Фиг тебе! Сначала закончи с предыдущим пользователем.');
             return;
         }
 
-        let newRow = new TableRow('', columns);
+        let newRow = new TableRow('', this.dates.length);
         newRow.appendTo(this.element);
         newRow.generateClick();
         this.rows.push(newRow);
 
         store.dispatch({
-           type: 'ADD',
+           type: 'ADD_NAME',
            payload: ''    
         });
+    }
+
+    // Очень сложная логика да
+    update(dates) {
+        // Если дата была удалена
+        if (dates.length < this.dates.length) {
+            const index = this.dates.findIndex(
+                item => !dates.includes(item)
+            );
+            this.rows.forEach(row => row.deleteByIndex(index));
+            // Ту-ту!!!!
+            let element = this.header.element.firstElementChild.nextElementSibling;
+            let i  = 0;
+            while (i < index) {
+                element = element.nextElementSibling;
+                i += 1;
+            }
+            element.remove();
+        // Если дата была добавлена
+        } else if (dates.length > this.dates.length) {
+            const element = dates.find(
+                item => !this.dates.includes(item)
+            );
+            console.log(element);
+            this.rows.forEach(row => row.appendNewItem());
+            let item = new Node('div', {
+                classList:  'table-header__item',
+                textContent: element
+            });
+            item.appendIn(this.header);
+        }
+        this.dates = dates.slice(0);
     }
 }

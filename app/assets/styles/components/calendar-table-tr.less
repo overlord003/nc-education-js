@@ -1,0 +1,25 @@
+.calendar-table-tr {
+  cursor: pointer;
+
+  &__td {
+    padding: 3px;
+
+    text-align: center;
+
+    &:hover:not(._disabled) {
+      background-color: #b1dcfb;
+    }
+
+    &._disabled {
+      background-color: #cecece;
+    }
+    
+    &._booked {
+      background-color: #b1dcfb;
+      
+      &:hover {
+        background-color: #2780E3;
+      }
+    }
+  }
+}

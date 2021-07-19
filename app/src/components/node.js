@@ -27,6 +27,13 @@ class Node {
         this.element.classList.remove(removedClass);
     }
 
+    appendIn(parent, replacement=false) {
+        if (replacement) {
+            parent.innerHTML = '';
+        }
+        parent.element.append(this.element);
+    }
+
     appendTo(parent, replacement=false) {
         if (replacement) {
             parent.innerHTML = '';
@@ -34,11 +41,19 @@ class Node {
         parent.append(this.element);
     }
 
+    removeChildren() {
+        this.element.innerHTML = '';
+    }
+
     insertText(text, replacement=false) {
         if (replacement) {
             this.element.innerHTML = '';
         }
         this.element.textContent = text;
+    }
+
+    insertHTML(html) {
+        this.element.innerHTML = html;
     }
 
     setFocus(focus=true) {
@@ -55,5 +70,9 @@ class Node {
 
     hide() {
         this.element.style.display = 'none';
+    }
+
+    makeDragNDrop() {
+        this.element.draggable = true;
     }
 }

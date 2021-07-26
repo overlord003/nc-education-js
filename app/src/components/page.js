@@ -8,6 +8,18 @@ class Page extends Node {
             <p class="description-section__subtitle">${instruction}</p>
         </section>
         `);
+
+        // Смена темы
+        const buttonTheme = new Button('content__theme-button button _theme-toggle', '');
+        buttonTheme.appendIn(this);
+        buttonTheme.addHandler('click', (event) => {
+            if(document.documentElement.hasAttribute("theme")){
+                document.documentElement.removeAttribute("theme");
+            }
+            else{
+                document.documentElement.setAttribute("theme", "light");
+            }
+        });
     }
 }
 
@@ -92,7 +104,43 @@ class UsersPage extends Page {
         this.nextButton = new Button('users-section__next-button button _mini', 'Далее');
         this.nextButton.appendIn(this.section)
         this.nextButton.addHandler('click', (event) => {
-            alert('Посмотрите сами на табличку и проанализируйте!');
+            let tableRows = this._table.element.querySelectorAll('.table-row');
+
+            let results = [];
+            for (let row of tableRows) {
+                let array = Array
+                    .from(row.querySelectorAll('.checkbox__input'))
+                    .map(item => {
+                        return item.checked;
+                    });
+                // console.log(array);
+                // return array;
+                //results.push(row.getBooleanArray());
+                results.push(array);
+            }
+            console.log(results);
+
+            // ;)))
+            let dates = [];
+            for (let j = 0; j < results[0].length; j++) {
+                let answer = true
+                for (let i = 0; i < results.length; i++) {
+                    answer = answer && results[i][j];
+                }
+                dates.push(answer);
+            }
+
+            let goodDates = store.state.dates.filter((date, index) => {
+                if (dates[index]) return date;
+            });
+
+            console.log(goodDates);
+            window.sessionStorage.setItem('goodDates', goodDates);
+
+            if (goodDates.length > 0) {
+                window.router.go('/results');
+
+            }
         });
 
         store.subscribe((state) => {
@@ -111,4 +159,57 @@ class UsersPage extends Page {
             this._table.addNewRow();
         });
     }
+}
+
+class ResultsPage extends Page {
+    constructor() {
+        super('Шаг 3. Посмотрите результат.');
+
+        this.section = new Section('content', 'result-section');
+        this.section.appendIn(this);
+
+        this.prevButton = new Button('result-section__prev-button button _mini', 'Назад');
+        this.prevButton.appendIn(this.section)
+        this.prevButton.addHandler('click', (event) => {
+            window.router.go('/users');
+        });
+    
+        this.goodDates = new Node('div', {
+            classList: 'result-section__good-dates good-dates'
+        });
+        this.goodDates.appendIn(this.section);
+        
+        this.datesList = new Node('ul', {classList: 'good-dates__list good-dates-list'});
+        this.datesList.appendIn(this.goodDates);
+
+        let dates = window.sessionStorage.getItem('goodDates').split(',');
+        window.sessionStorage.clear();
+        
+        dates
+            .forEach(date => {
+                const item = new Node('li', {
+                    classList: ' good-dates-list__item',
+                    textContent: date
+                });
+                item.appendIn(this.datesList);
+        });
+    }
+        
+    show() {
+        super.show();
+
+        this.datesList.insertHTML('');
+
+        let dates = window.sessionStorage.getItem('goodDates').split(',');
+        window.sessionStorage.clear();
+        
+        dates
+            .forEach(date => {
+                const item = new Node('li', {
+                    classList: ' good-dates-list__item',
+                    textContent: date
+                });
+                item.appendIn(this.datesList);
+            });
+    }    
 }

@@ -56,6 +56,13 @@ const reducer = (state = initialState, action) => {
 				dates: state.dates
 			}
 		}
+		case 'CLEAR': {
+			return {
+				...state,
+				items: [],
+				dates: []
+			}
+		}
 		default:
 			return state
 	}

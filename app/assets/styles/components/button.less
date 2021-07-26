@@ -1,8 +1,8 @@
 .button {
     cursor: pointer;
 
-    color: @light-brown;
-    background-color: @white;
+    color: var(--text-secondary-color);
+    background-color: var(--container-bg-color);
 
     border: none;
     border-radius: 14px;
@@ -18,7 +18,11 @@
 
     &._transparent {
         background-color: transparent;
-        color: @white;
+        color: var(--text-primary-color);
+    }
+
+    &._theme-toggle {
+        
     }
 
     &:hover {

@@ -56,6 +56,13 @@ const reducer = (state = initialState, action) => {
 				dates: state.dates
 			}
 		}
+		case 'CLEAR': {
+			return {
+				...state,
+				items: [],
+				dates: []
+			}
+		}
 		default:
 			return state
 	}
@@ -424,7 +431,7 @@ class Input extends Node {
             classList: parentClass,
             attributes: {
                 type: type,
-                maxlength: 32
+                maxlength: 16
             }
         });
     }
@@ -528,6 +535,16 @@ class TableRow extends Node {
 
     generateClick() {
         this._userItem.element.dispatchEvent(new Event('click', {bubbles: true}));
+    }
+
+    getBooleanArray() {
+        let array = Array
+            .from(this.element.querySelectorAll('.checkbox__input'))
+            .map(item => {
+                return item.checked;
+            });
+        console.log(array);
+        return array;
     }
 }
 class Table extends Node {
@@ -740,6 +757,13 @@ class Table extends Node {
         this.dates = dates.slice(0);
     }
 }
+
+
+class ResultList extends Node {
+    constructor(parentClass, dates) {
+        super('div', {classList: `${parentClass}__table table`});
+    }
+}
 class Page extends Node {
     constructor(instruction='') {
         super('main', {classList: 'app__content content'});
@@ -750,6 +774,18 @@ class Page extends Node {
             <p class="description-section__subtitle">${instruction}</p>
         </section>
         `);
+
+        // Смена темы
+        const buttonTheme = new Button('content__theme-button button _theme-toggle', '');
+        buttonTheme.appendIn(this);
+        buttonTheme.addHandler('click', (event) => {
+            if(document.documentElement.hasAttribute("theme")){
+                document.documentElement.removeAttribute("theme");
+            }
+            else{
+                document.documentElement.setAttribute("theme", "light");
+            }
+        });
     }
 }
 
@@ -834,7 +870,43 @@ class UsersPage extends Page {
         this.nextButton = new Button('users-section__next-button button _mini', 'Далее');
         this.nextButton.appendIn(this.section)
         this.nextButton.addHandler('click', (event) => {
-            alert('Посмотрите сами на табличку и проанализируйте!');
+            let tableRows = this._table.element.querySelectorAll('.table-row');
+
+            let results = [];
+            for (let row of tableRows) {
+                let array = Array
+                    .from(row.querySelectorAll('.checkbox__input'))
+                    .map(item => {
+                        return item.checked;
+                    });
+                // console.log(array);
+                // return array;
+                //results.push(row.getBooleanArray());
+                results.push(array);
+            }
+            console.log(results);
+
+            // ;)))
+            let dates = [];
+            for (let j = 0; j < results[0].length; j++) {
+                let answer = true
+                for (let i = 0; i < results.length; i++) {
+                    answer = answer && results[i][j];
+                }
+                dates.push(answer);
+            }
+
+            let goodDates = store.state.dates.filter((date, index) => {
+                if (dates[index]) return date;
+            });
+
+            console.log(goodDates);
+            window.sessionStorage.setItem('goodDates', goodDates);
+
+            if (goodDates.length > 0) {
+                window.router.go('/results');
+
+            }
         });
 
         store.subscribe((state) => {
@@ -853,6 +925,59 @@ class UsersPage extends Page {
             this._table.addNewRow();
         });
     }
+}
+
+class ResultsPage extends Page {
+    constructor() {
+        super('Шаг 3. Посмотрите результат.');
+
+        this.section = new Section('content', 'result-section');
+        this.section.appendIn(this);
+
+        this.prevButton = new Button('result-section__prev-button button _mini', 'Назад');
+        this.prevButton.appendIn(this.section)
+        this.prevButton.addHandler('click', (event) => {
+            window.router.go('/users');
+        });
+    
+        this.goodDates = new Node('div', {
+            classList: 'result-section__good-dates good-dates'
+        });
+        this.goodDates.appendIn(this.section);
+        
+        this.datesList = new Node('ul', {classList: 'good-dates__list good-dates-list'});
+        this.datesList.appendIn(this.goodDates);
+
+        let dates = window.sessionStorage.getItem('goodDates').split(',');
+        window.sessionStorage.clear();
+        
+        dates
+            .forEach(date => {
+                const item = new Node('li', {
+                    classList: ' good-dates-list__item',
+                    textContent: date
+                });
+                item.appendIn(this.datesList);
+        });
+    }
+        
+    show() {
+        super.show();
+
+        this.datesList.insertHTML('');
+
+        let dates = window.sessionStorage.getItem('goodDates').split(',');
+        window.sessionStorage.clear();
+        
+        dates
+            .forEach(date => {
+                const item = new Node('li', {
+                    classList: ' good-dates-list__item',
+                    textContent: date
+                });
+                item.appendIn(this.datesList);
+            });
+    }    
 }
 const store = createStore(reducer);
 store.subscribe((state) => console.log(state));
@@ -975,6 +1100,7 @@ router
     .use('/', StartPage)
     .use('/calendar', CalendarPage)
     .use('/users', UsersPage)
+    .use('/results',ResultsPage)
     .start();
 
 window.router = router;

@@ -208,3 +208,10 @@ class Table extends Node {
         this.dates = dates.slice(0);
     }
 }
+
+
+class ResultList extends Node {
+    constructor(parentClass, dates) {
+        super('div', {classList: `${parentClass}__table table`});
+    }
+}

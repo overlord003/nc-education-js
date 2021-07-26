@@ -4,7 +4,7 @@ class Input extends Node {
             classList: parentClass,
             attributes: {
                 type: type,
-                maxlength: 32
+                maxlength: 16
             }
         });
     }

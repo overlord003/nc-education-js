@@ -119,6 +119,7 @@ router
     .use('/', StartPage)
     .use('/calendar', CalendarPage)
     .use('/users', UsersPage)
+    .use('/results',ResultsPage)
     .start();
 
 window.router = router;

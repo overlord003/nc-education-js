@@ -17,6 +17,7 @@
     "merge-stream": "^2.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.3",
     "browser-sync": "^2.26.13",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",

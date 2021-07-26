@@ -18,3 +18,19 @@
         box-sizing: border-box;
     }
 }
+
+:root{
+    --bg-color: @dark-background-color;
+    --container-bg-color: @white;
+
+    --text-primary-color: @white;
+    --text-secondary-color: @light-brown;
+}
+
+:root[theme='light'] {
+    --bg-color: @light-background-color;
+    --container-bg-color: @brown;
+
+    --text-primary-color: @brown;
+    --text-secondary-color: @white;
+}

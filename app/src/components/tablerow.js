@@ -42,4 +42,14 @@ class TableRow extends Node {
     generateClick() {
         this._userItem.element.dispatchEvent(new Event('click', {bubbles: true}));
     }
+
+    getBooleanArray() {
+        let array = Array
+            .from(this.element.querySelectorAll('.checkbox__input'))
+            .map(item => {
+                return item.checked;
+            });
+        console.log(array);
+        return array;
+    }
 }

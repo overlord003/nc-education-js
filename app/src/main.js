@@ -1,6 +1,8 @@
 const store = createStore(reducer);
 store.subscribe((state) => console.log(state));
 
+console.log(store.state);
+
 class Route {
     constructor(pathname, view, props) {
         this._pathname = pathname;
@@ -62,8 +64,6 @@ class Router {
 
     start() {
         window.onpopstate = (event => {
-            // Событие popstate отсылается объекту window каждый раз, когда активная
-            // запись истории меняется с одной на другую для одного и того же документа.
             console.log(`onpopstate`);
             console.dir({event});
 
@@ -124,3 +124,4 @@ router
 window.router = router;
 
 window.router.go('/');
+// window.router.go('#/calendar');

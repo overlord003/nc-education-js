@@ -1,18 +1,20 @@
 .app {
-    background-color: @secondary-color;
+    width: 100vw;
+    height: 100vh;
 
-    font-size: 17px;
-    line-height: 25px;
-}
+    margin: 0;
 
-.start-section {
-    margin-top: 80px;
+    background-image: url(./images/background.png);
+    background-repeat: no-repeat;
+    background-size: cover;
 
     display: flex;
     justify-content: center;
     align-items: center;
-}
 
-.button {
-    display: flex;
+    font-family: Arial, Helvetica, sans-serif;
+
+    & * {
+        box-sizing: border-box;
+    }
 }

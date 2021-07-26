@@ -58,7 +58,7 @@ class Calendar extends SimpleTable {
         this.currentYear = 2021;
         this.currentMonth = 7;
 
-        this.count = 0;
+        // this.count = sto;
 
         this.element.onclick = (event) => {
             let td = event.target.closest('td'); 
@@ -75,19 +75,19 @@ class Calendar extends SimpleTable {
 
                 store.dispatch({
                     type: 'REMOVE_DATE',
-                    payload: this.formatDate(new Date(this.currentYear, this.currentMonth, +td.textContent))
+                    payload: this.formatDate(new Date(this.currentYear, this.currentMonth - 1, +td.textContent))
                 });
             } else {
-                if (this.count > 5) {
+                if (store.state.dates.length > 6) {
                     alert('Превышено допустимое количество забронированных дат!');
                 } else {
-                    this.count += 1;
+                    // this.count += 1;
                     
                     td.classList.add('_booked');
 
                     store.dispatch({
                         type: 'ADD_DATE',
-                        payload: this.formatDate(new Date(this.currentYear, this.currentMonth, +td.textContent))
+                        payload: this.formatDate(new Date(this.currentYear, this.currentMonth - 1, +td.textContent))
                     });
                 }
             }
@@ -96,6 +96,8 @@ class Calendar extends SimpleTable {
 
     createCalendar(year, month) {
         this.removeRows();
+
+        console.log('...');
 
         this.currentYear = year;
         this.currentMonth = month;
@@ -114,7 +116,7 @@ class Calendar extends SimpleTable {
                 text: d.getDate(),
                 modificator: store.checkStore(
                     this.formatDate(
-                        new Date(this.currentYear, this.currentMonth, d.getDate())
+                        new Date(this.currentYear, this.currentMonth - 1, d.getDate())
                     )) ? '_booked' : ''
                 });
       
@@ -176,8 +178,8 @@ class CalendarBlock extends Node {
         this._header = new Node('header', {classList: 'calendar__header calendar-header'});
         this._header.appendIn(this);
 
-        this._prevButton = new Button('calendar-header__button', 'Пред.');
-        this._nextButton = new Button('calendar-header__button', 'След.');
+        this._prevButton = new Button('calendar-header__button button', '<');
+        this._nextButton = new Button('calendar-header__button button', '>');
         this._prevButton.addHandler('click', () => {
             this._calendar.prev();
             this._updateTitle();
@@ -224,6 +226,8 @@ class DatesBlock extends Node{
 
         this.datesList = new Node('ul', {classList: 'dates__list dates-list'});
         this.datesList.appendIn(this);
+
+        this.update(store.state.dates);
     }
 
     update(dates) {

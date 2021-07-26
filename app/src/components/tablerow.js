@@ -20,6 +20,7 @@ class TableRow extends Node {
         this.makeDragNDrop();
     }
 
+
     // Добавить потом проверку на то что индекс больше чем кол-во элементов
     deleteByIndex(index) {
         let element = this.element.firstElementChild.nextElementSibling;

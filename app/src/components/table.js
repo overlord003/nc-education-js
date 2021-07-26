@@ -14,6 +14,7 @@ class Table extends Node {
         });
         let item = new Node('div', {
             classList:  'table-header__item',
+            textContent: 'Участники'
         });
         item.appendIn(this.header);
         dates.forEach(date => {
@@ -26,27 +27,25 @@ class Table extends Node {
         this.header.appendIn(this);
         /* Созданиие заголовка закончено */
 
-        // Создаем строчки
+        // Создаем строчки c именами из localStorage
         this.rows = [];
         names.forEach(name => {
             let row = new TableRow(name, dates.length);
             row.appendTo(this.element);
             this.rows.push(row);
 
-            store.dispatch({
-                type: 'ADD_NAME',
-                payload: name    
-             });
+            // store.dispatch({
+            //     type: 'ADD_NAME',
+            //     payload: name    
+            //  });
         });
 
         this._editingItem = null;     
         this.element.onclick = (event) => {
-            let target = event.target.closest('.user-item, .edit-ok, .edit-cancel');
+            let target = event.target.closest('.user-item, .edit-cancel');
             if (!this.element.contains(target)) return;
         
-            if (target.classList.contains('edit-ok')) {
-                this._finishUserItemEdit(true);
-            } else if (target.classList.contains('edit-cancel')) {
+            if (target.classList.contains('edit-cancel')) {
                 this._finishUserItemEdit();
             } else if (target.classList.contains('user-item')) { 
                 if (this._editingItem) {
@@ -69,25 +68,47 @@ class Table extends Node {
         };
 
         this.addHandler('dragstart', (event) => 
-            event.target.classList.add('selected')
+            event.target.classList.add('_selected')
         );
 
-        this.addHandler('dragend', (event) =>
-            event.target.classList.remove('selected')
-        );
+        this.addHandler('dragend', (event) => {
+            event.target.classList.remove('_selected');
+            if (event.target.classList.contains('_deleted')) {
+                let userItem = event.target.querySelector('.user-item');
+                store.dispatch({
+                    type: 'REMOVE_NAME',
+                    payload: userItem.innerHTML
+                });
+                event.target.remove();
+            }
+        });
 
         this.addHandler('dragover', (event) => {
             event.preventDefault();
 
-            let activeElement = this.element.querySelector('.selected');
+            let activeElement = this.element.querySelector('._selected');
+            activeElement.classList.remove('_deleted');
+        
             let currentElement = event.target.closest('.table-row');
             
-            if (!currentElement) return;
-            if (activeElement === currentElement) return;
+            let deletedZone = event.target.closest('.deleted-zone');
+            
+            if (currentElement) {
+                if (activeElement === currentElement) return;
 
-            const nextElement = getNextElement(event.clientY, currentElement);
-            this.element.insertBefore(activeElement, nextElement);
+                const nextElement = getNextElement(event.clientY, currentElement);
+                this.element.insertBefore(activeElement, nextElement);
+            } else if (deletedZone) {
+                activeElement.classList.add('_deleted');
+            } 
         });
+
+        // Зона для удаления элементов
+        this.deletedZone = new Node('div', {
+            classList: 'table__deleted-zone deleted-zone'
+        });
+        this.deletedZone.appendIn(this);
+
         // Drag n drop end
 
         Table.instance = this;
@@ -105,34 +126,42 @@ class Table extends Node {
     
         item.classList.add('edit-item');
         this._editingItem.form.appendTo(item, true);
-    }
-    
-    _finishUserItemEdit(isOk=false) {
-        if (isOk) {
-            let newValue = this._editingItem.form.name;
-            if (newValue) {
-                this._editingItem.item.innerHTML = newValue;
+        this._editingItem.form.name = this._editingItem.data;
 
-                let lastValue = this._editingItem.data;
-                store.dispatch({
-                    type: 'RENAME_NAME',
-                    payload: {lastValue, newValue}  
-                });
-            } else {
-                alert('И что за фигня? Введи сюда хоть что-то, паразит.');
+        // Работа с формой
+        this._editingItem.form.addHandler('submit', (event) => {
+            event.preventDefault();
+            
+            const newValue = this._editingItem.form.name;
+            if (!newValue) return;
+            if (store.checkStoreNames(newValue)) {
+                alert('Такое имя уже есть!');
                 return;
             }
-        } else { 
-            this._editingItem.item.innerHTML = this._editingItem.data;
-        }
+
+            this._editingItem.item.innerHTML = newValue;
+
+            let lastValue = this._editingItem.data;
+            store.dispatch({
+                type: 'RENAME_NAME',
+                payload: {lastValue, newValue}  
+            });
+
+            this._editingItem.item.classList.remove('edit-item');
+            this._editingItem = null;
+        });
+    }
     
+    _finishUserItemEdit() {
+        if (!this._editingItem.data) return;
+        this._editingItem.item.innerHTML = this._editingItem.data;   
         this._editingItem.item.classList.remove('edit-item');
         this._editingItem = null;
     }
 
     addNewRow() {
         if (this._editingItem) {
-            alert('Попытался сломать? Фиг тебе! Сначала закончи с предыдущим пользователем.');
+            alert('Вы не закончили редактировать текущего пользователя.');
             return;
         }
 

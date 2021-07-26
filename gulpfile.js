@@ -38,6 +38,10 @@ gulp.task("scripts", function() {
    	.pipe(dest('./dist'));
 });
 
+gulp.task("images", function() {
+	return gulp.src("./app/assets/images/**").pipe(gulp.dest("./dist/images"))
+});
+
 gulp.task("serve", function () {
 	browserSync.init({
 		server: {
@@ -48,12 +52,14 @@ gulp.task("serve", function () {
 	gulp.watch("./app/index.html").on("change", series("html"));
 	gulp.watch("./app/assets/styles/**/*.less").on("change", series("less"));
 	gulp.watch("./app/src/**/*.js").on("change", series("scripts"));
+	gulp.watch("./app/src/images/**").on("change", series("images"));
+
 	
 	gulp.watch("./dist/index.html").on("change", browserSync.reload);
 	gulp.watch("./dist/style.css").on("change", browserSync.reload);
 	gulp.watch("./dist/main.js").on("change", browserSync.reload);
 });
 
-gulp.task("build", series("html", "less", "scripts"));
+gulp.task("build", series("html", "less", "scripts", "images"));
 
-gulp.task("default", series(parallel("html", "less", "scripts"), "serve"));
+gulp.task("default", series(parallel("html", "less", "scripts", "images"), "serve"));

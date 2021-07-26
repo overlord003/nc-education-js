@@ -1,0 +1,27 @@
+.button {
+    cursor: pointer;
+
+    color: @light-brown;
+    background-color: @white;
+
+    border: none;
+    border-radius: 14px;
+
+    &._mini {
+        width: 150px;
+
+        border-radius: 8px;
+
+        font-size: 27px;
+        line-height: 33px;
+    }
+
+    &._transparent {
+        background-color: transparent;
+        color: @white;
+    }
+
+    &:hover {
+        opacity: .9;
+    }
+}

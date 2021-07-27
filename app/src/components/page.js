@@ -137,9 +137,7 @@ class UsersPage extends Page {
             console.log(goodDates);
             window.localStorage.setItem('goodDates', goodDates);
 
-            if (goodDates.length > 0) {
-                window.router.go('/results/');
-            }
+            window.router.go('/results/');
         });
 
         store.subscribe((state) => {
@@ -181,17 +179,24 @@ class ResultsPage extends Page {
         this.datesList = new Node('ul', {classList: 'good-dates__list good-dates-list'});
         this.datesList.appendIn(this.goodDates);
 
-        let dates = window.localStorage.getItem('goodDates').split(',');
-        //window.localStorage.removeItem('goodDates');
-        
-        dates
-            .forEach(date => {
-                const item = new Node('li', {
-                    classList: ' good-dates-list__item',
-                    textContent: date
+        let dates = window.localStorage.getItem('goodDates');
+        if (!dates) {
+            new Node('li', {
+                classList: 'good-dates-list__item',
+                textContent: 'Нет возможных дат.'
+            }).appendIn(this.datesList);
+        } else {
+            dates
+                .split(',')
+                .forEach(date => {
+                    const item = new Node('li', {
+                        classList: ' good-dates-list__item',
+                        textContent: date
+                    });
+                    item.appendIn(this.datesList);
                 });
-                item.appendIn(this.datesList);
-        });
+        }
+        window.localStorage.removeItem('goodDates');
     }
         
     show() {
@@ -199,16 +204,23 @@ class ResultsPage extends Page {
 
         this.datesList.insertHTML('');
 
-        let dates = window.localStorage.getItem('goodDates').split(',');
-        //window.localStorage.removeItem('goodDates');
-        
-        dates
-            .forEach(date => {
-                const item = new Node('li', {
-                    classList: ' good-dates-list__item',
-                    textContent: date
+        let dates = window.localStorage.getItem('goodDates');
+        if (!dates) {
+            new Node('li', {
+                classList: 'good-dates-list__item',
+                textContent: 'Нет возможных дат.'
+            }).appendIn(this.datesList);
+        } else {
+            dates
+                .split(',')
+                .forEach(date => {
+                    const item = new Node('li', {
+                        classList: ' good-dates-list__item',
+                        textContent: date
+                    });
+                    item.appendIn(this.datesList);
                 });
-                item.appendIn(this.datesList);
-            });
+        }
+        window.localStorage.removeItem('goodDates');
     }    
 }

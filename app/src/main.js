@@ -117,12 +117,12 @@ const router = new Router('.app');
 
 router
     .use('/', StartPage)
-    .use('/calendar', CalendarPage)
-    .use('/users', UsersPage)
-    .use('/results',ResultsPage)
+    .use('/calendar/', CalendarPage)
+    .use('/users/', UsersPage)
+    .use('/results/', ResultsPage)
     .start();
 
 window.router = router;
 
-window.router.go('/');
+// window.router.go('/');
 // window.router.go('#/calendar');

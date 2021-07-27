@@ -39,7 +39,7 @@ class StartPage extends Page {
         this.startButton = new Button('start-section__button button', 'Начать');
         this.startButton.appendIn(this.section)
         this.startButton.addHandler('click', (event) => {
-            window.router.go('/calendar');
+            window.router.go('/calendar/');
         });
     }
 }
@@ -71,7 +71,7 @@ class CalendarPage extends Page {
         this.nextButton.appendIn(this.section)
         this.nextButton.addHandler('click', (event) => {
             let dates = store.state ? store.state.dates : [];
-            if (dates.length > 0) window.router.go('/users');
+            if (dates.length > 0) window.router.go('/users/');
             else alert('Нужно выбрать как минимум одну дату.');
         });
     }
@@ -87,7 +87,7 @@ class UsersPage extends Page {
         this.prevButton = new Button('users-section__prev-button button _mini', 'Назад');
         this.prevButton.appendIn(this.section)
         this.prevButton.addHandler('click', (event) => {
-            window.router.go('/calendar');
+            window.router.go('/calendar/');
         });
 
         this.centerColumn = new Node('div', {
@@ -135,11 +135,10 @@ class UsersPage extends Page {
             });
 
             console.log(goodDates);
-            window.sessionStorage.setItem('goodDates', goodDates);
+            window.localStorage.setItem('goodDates', goodDates);
 
             if (goodDates.length > 0) {
-                window.router.go('/results');
-
+                window.router.go('/results/');
             }
         });
 
@@ -171,7 +170,7 @@ class ResultsPage extends Page {
         this.prevButton = new Button('result-section__prev-button button _mini', 'Назад');
         this.prevButton.appendIn(this.section)
         this.prevButton.addHandler('click', (event) => {
-            window.router.go('/users');
+            window.router.go('/users/');
         });
     
         this.goodDates = new Node('div', {
@@ -182,8 +181,8 @@ class ResultsPage extends Page {
         this.datesList = new Node('ul', {classList: 'good-dates__list good-dates-list'});
         this.datesList.appendIn(this.goodDates);
 
-        let dates = window.sessionStorage.getItem('goodDates').split(',');
-        window.sessionStorage.clear();
+        let dates = window.localStorage.getItem('goodDates').split(',');
+        //window.localStorage.removeItem('goodDates');
         
         dates
             .forEach(date => {
@@ -200,8 +199,8 @@ class ResultsPage extends Page {
 
         this.datesList.insertHTML('');
 
-        let dates = window.sessionStorage.getItem('goodDates').split(',');
-        window.sessionStorage.clear();
+        let dates = window.localStorage.getItem('goodDates').split(',');
+        //window.localStorage.removeItem('goodDates');
         
         dates
             .forEach(date => {

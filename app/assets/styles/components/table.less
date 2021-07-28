@@ -122,11 +122,25 @@
     outline: 2px solid black;
 }
 
+.edit-item {
+    position: relative;
+}
+
 .form {
     z-index: 1000;
 
     & input {
         width: 100%;
+        
+        &:focus {
+            border: none;
+            outline: none;
+        }
+    }
+
+    &._focused {
+        position: absolute;
+        border: 2px solid @light-brown;
     }
 }
 

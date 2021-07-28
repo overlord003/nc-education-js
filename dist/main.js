@@ -107,12 +107,16 @@ class Node {
             );
     }
 
-    addHandler(event, callback) {
-        this.element.addEventListener(event, callback);
+    addHandler(event, callback, capture=false) {
+        this.element.addEventListener(event, callback, capture);
     }
 
-    removeHandler(event, callback) {
-        this.element.removeEventListener(event, callback);
+    removeHandler(event, callback, capture=false) {
+        this.element.removeEventListener(event, callback, capture);
+    }
+
+    dispatchEvent(event) {
+        return this.element.dispatchEvent(event);
     }
 
     addClass(addedClass) {
@@ -135,6 +139,10 @@ class Node {
             parent.innerHTML = '';
         }
         parent.append(this.element);
+    }
+
+    insertAsHtml(html) {
+        this.element.insertAdjacentHTML("afterbegin", html);
     }
 
     removeChildren() {
@@ -173,7 +181,7 @@ class Node {
     }
 }
 class Button extends Node {
-    constructor(classList, textContent) {
+    constructor(classList, textContent='') {
         super('button', {
             classList: classList,
             textContent: textContent
@@ -453,12 +461,6 @@ class UserForm extends Node {
 
         this._inputText = new Input('form__input input', 'text');
         this._inputText.appendTo(this.element);
-        // this._inputText.addHandler('input', (event) => {
-        //     if (this._inputText.value.length > 13) {
-        //         alert('Превышено допустимое количество символов!');
-        //         return false;
-        //     }
-        // });
 
         this._btnOk = new Button('form__button button edit-ok', '');
         this._btnOk.element.hidden = true;
@@ -583,10 +585,6 @@ class Table extends Node {
             row.appendTo(this.element);
             this.rows.push(row);
 
-            // store.dispatch({
-            //     type: 'ADD_NAME',
-            //     payload: name    
-            //  });
         });
 
         this._editingItem = null;     
@@ -677,6 +675,11 @@ class Table extends Node {
         this._editingItem.form.appendTo(item, true);
         this._editingItem.form.name = this._editingItem.data;
 
+        this._editingItem.form.addClass('_focused');
+
+        this._editingItem.form.addHandler('focus', () => this._editingItem.form.addClass('_focused'), true);
+        this._editingItem.form.addHandler('blur', () => this._editingItem.form.removeClass('_focused'), true);
+
         // Работа с формой
         this._editingItem.form.addHandler('submit', (event) => {
             event.preventDefault();
@@ -705,6 +708,9 @@ class Table extends Node {
         if (!this._editingItem.data) return;
         this._editingItem.item.innerHTML = this._editingItem.data;   
         this._editingItem.item.classList.remove('edit-item');
+
+        this._editingItem.form.element.blur();
+        
         this._editingItem = null;
     }
 
@@ -768,24 +774,14 @@ class Page extends Node {
     constructor(instruction='') {
         super('main', {classList: 'app__content content'});
 
-        this.insertHTML(`
-        <section class="content__section description-section">
-            <h1 class="description-section__title">Выбор даты</h1>
-            <p class="description-section__subtitle">${instruction}</p>
-        </section>
+        this.addHandler('click', event => event.stopPropagation());
+        
+        this.insertAsHtml(`
+            <section class="content__section description-section">
+                <h1 class="description-section__title">Выбор даты</h1>
+                <p class="description-section__subtitle">${instruction}</p>
+            </section>
         `);
-
-        // Смена темы
-        const buttonTheme = new Button('content__theme-button button _theme-toggle', '');
-        buttonTheme.appendIn(this);
-        buttonTheme.addHandler('click', (event) => {
-            if(document.documentElement.hasAttribute("theme")){
-                document.documentElement.removeAttribute("theme");
-            }
-            else{
-                document.documentElement.setAttribute("theme", "light");
-            }
-        });
     }
 }
 
@@ -990,6 +986,91 @@ class ResultsPage extends Page {
         window.localStorage.removeItem('goodDates');
     }    
 }
+// Демонстрация работы с генерацией пользовательских событий.
+
+let btnToggleTheme = new Button('app__button button _toggle');
+btnToggleTheme.appendTo(document.querySelector('.app'));
+
+let toggleTheme = () => {
+    let event = new CustomEvent('toggle-theme', {
+        cancelable: true
+    });
+
+    if (!btnToggleTheme.dispatchEvent(event)) {
+        alert('Вы отменили выбор темы.');
+    } else {
+        if(document.documentElement.hasAttribute("theme")){
+            document.documentElement.removeAttribute("theme");
+        } else {
+            document.documentElement.setAttribute("theme", "light");
+        }
+    }
+};
+
+let confirmNewTheme = event => {
+    if (!confirm('Вы уверены, что хотите сменить тему?')) {
+        event.preventDefault();
+    }
+};
+
+btnToggleTheme.addHandler('click', toggleTheme);
+btnToggleTheme.addHandler('toggle-theme', confirmNewTheme);
+
+btnToggleTheme.addHandler('click', event => event.stopPropagation());
+// Отслеживание размеров экрана - при изменении размеров
+// вылезает окошко с размерами. Так же здесь использовался дебоунс
+
+let sizeNotice = new Node('div', {
+    classList: 'app__notice size-notice'
+});
+sizeNotice.appendTo(document.querySelector('.app')); 
+sizeNotice.hide();
+
+
+function debounce(f, t) {
+    return function (args) {
+        let previousCall = this.lastCall;
+        this.lastCall = Date.now();
+        if (previousCall && ((this.lastCall - previousCall) <= t)) {
+            clearTimeout(this.lastCallTimer);
+        }
+        this.lastCallTimer = setTimeout(() => f(args), t);
+    }
+}
+
+let showSize = event => {
+    sizeNotice.insertText(`${document.documentElement.clientWidth}px x ${document.documentElement.clientHeight}px`, true);
+    sizeNotice.show();
+
+    setTimeout(() => sizeNotice.hide(), 1000);
+};
+
+let debouncedshowSize = debounce(showSize, 1001);
+
+window.addEventListener('resize', debouncedshowSize);
+
+// Еслии тыкаем на фон, то увеличивается счетчик (кстати тут замыкание).
+// В других местах на элементы с атрибутом main навешаны обработчики,
+// что клики не всплывают.
+
+const MAX_CLICKS = 5;
+
+function clicker() {
+    let count = 0;
+
+    function counter(event) {
+        count += 1;
+        if (count > MAX_CLICKS) {
+            alert('Картина, конечно, красивая, но вы тратите время зря!');
+            count = 0;
+        }
+    }
+
+    return counter;
+}
+
+window.addEventListener('click', clicker());
+
 const store = createStore(reducer);
 store.subscribe((state) => console.log(state));
 
@@ -1106,15 +1187,10 @@ class Router {
 }
 
 const router = new Router('.app');
-
 router
     .use('/', StartPage)
     .use('/calendar/', CalendarPage)
     .use('/users/', UsersPage)
     .use('/results/', ResultsPage)
     .start();
-
 window.router = router;
-
-// window.router.go('/');
-// window.router.go('#/calendar');

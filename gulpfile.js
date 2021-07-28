@@ -32,6 +32,9 @@ gulp.task("scripts", function() {
 		'./app/src/components/tablerow.js',
 		'./app/src/components/table.js',
 		'./app/src/components/page.js',
+		'./app/src/components/toggleTheme.js',
+		'./app/src/components/showSize.js',
+		'./app/src/components/clicker.js',
 		'./app/src/main.js'
 	]) 
    	.pipe(concat('main.js')) 

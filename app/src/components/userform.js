@@ -26,12 +26,6 @@ class UserForm extends Node {
 
         this._inputText = new Input('form__input input', 'text');
         this._inputText.appendTo(this.element);
-        // this._inputText.addHandler('input', (event) => {
-        //     if (this._inputText.value.length > 13) {
-        //         alert('Превышено допустимое количество символов!');
-        //         return false;
-        //     }
-        // });
 
         this._btnOk = new Button('form__button button edit-ok', '');
         this._btnOk.element.hidden = true;

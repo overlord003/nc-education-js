@@ -11,12 +11,16 @@ class Node {
             );
     }
 
-    addHandler(event, callback) {
-        this.element.addEventListener(event, callback);
+    addHandler(event, callback, capture=false) {
+        this.element.addEventListener(event, callback, capture);
     }
 
-    removeHandler(event, callback) {
-        this.element.removeEventListener(event, callback);
+    removeHandler(event, callback, capture=false) {
+        this.element.removeEventListener(event, callback, capture);
+    }
+
+    dispatchEvent(event) {
+        return this.element.dispatchEvent(event);
     }
 
     addClass(addedClass) {
@@ -39,6 +43,10 @@ class Node {
             parent.innerHTML = '';
         }
         parent.append(this.element);
+    }
+
+    insertAsHtml(html) {
+        this.element.insertAdjacentHTML("afterbegin", html);
     }
 
     removeChildren() {

@@ -2,24 +2,14 @@ class Page extends Node {
     constructor(instruction='') {
         super('main', {classList: 'app__content content'});
 
-        this.insertHTML(`
-        <section class="content__section description-section">
-            <h1 class="description-section__title">Выбор даты</h1>
-            <p class="description-section__subtitle">${instruction}</p>
-        </section>
+        this.addHandler('click', event => event.stopPropagation());
+        
+        this.insertAsHtml(`
+            <section class="content__section description-section">
+                <h1 class="description-section__title">Выбор даты</h1>
+                <p class="description-section__subtitle">${instruction}</p>
+            </section>
         `);
-
-        // Смена темы
-        const buttonTheme = new Button('content__theme-button button _theme-toggle', '');
-        buttonTheme.appendIn(this);
-        buttonTheme.addHandler('click', (event) => {
-            if(document.documentElement.hasAttribute("theme")){
-                document.documentElement.removeAttribute("theme");
-            }
-            else{
-                document.documentElement.setAttribute("theme", "light");
-            }
-        });
     }
 }
 

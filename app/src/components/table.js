@@ -34,10 +34,6 @@ class Table extends Node {
             row.appendTo(this.element);
             this.rows.push(row);
 
-            // store.dispatch({
-            //     type: 'ADD_NAME',
-            //     payload: name    
-            //  });
         });
 
         this._editingItem = null;     
@@ -128,6 +124,11 @@ class Table extends Node {
         this._editingItem.form.appendTo(item, true);
         this._editingItem.form.name = this._editingItem.data;
 
+        this._editingItem.form.addClass('_focused');
+
+        this._editingItem.form.addHandler('focus', () => this._editingItem.form.addClass('_focused'), true);
+        this._editingItem.form.addHandler('blur', () => this._editingItem.form.removeClass('_focused'), true);
+
         // Работа с формой
         this._editingItem.form.addHandler('submit', (event) => {
             event.preventDefault();
@@ -156,6 +157,9 @@ class Table extends Node {
         if (!this._editingItem.data) return;
         this._editingItem.item.innerHTML = this._editingItem.data;   
         this._editingItem.item.classList.remove('edit-item');
+
+        this._editingItem.form.element.blur();
+        
         this._editingItem = null;
     }
 
